@@ -31,7 +31,7 @@
       }, options);
 
       // Resizer() resizes items based on the object width divided by the compressor * 10
-      var resizer = $.debounce(function() {
+      var resizer = function() {
         var bounds = {}, ratio = settings.nativeWidth / settings.nativeHeight, overflow;
 
         bounds.width  = Math.max($parent.width(), settings.minHeight * ratio);
@@ -52,13 +52,22 @@
               bounds.marginLeft = -overflow + 'px';
               break;
           }
+        } else {
+          bounds.marginLeft  = '0px';
+          bounds.marginRight = '0px';
         }
 
         bounds.width  = bounds.width + 'px';
         bounds.height = bounds.height + 'px';
 
         $img.css(bounds);
-      }, 50);
+      };
+      if (typeof _ === 'object' && typeof _.debounce === 'function') {
+        resizer = _.debounce(resizer, 50);
+      }
+      if($.debounce) {
+        resizer = $.debounce(resizer, 50);
+      };
 
       // Call once to set.
       resizer();
